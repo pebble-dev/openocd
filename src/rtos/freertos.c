@@ -51,7 +51,11 @@ static const struct freertos_params freertos_params_list[] = {
 	8,						/* list_elem_next_offset; */
 	12,						/* list_elem_content_offset */
 	0,						/* thread_stack_offset; */
+#ifdef FREERTOS_PEBBLE
+	88,						/* thread_name_offset; FIXME: 84 for stm32f2 */
+#else
 	52,						/* thread_name_offset; */
+#endif
 	&rtos_standard_cortex_m3_stacking,	/* stacking_info */
 	&rtos_standard_cortex_m4f_stacking,
 	&rtos_standard_cortex_m4f_fpu_stacking,
@@ -444,7 +448,11 @@ static int freertos_get_thread_reg_list(struct rtos *rtos, int64_t thread_id,
 		/* Read the LR to decide between stacking with or without FPU */
 		uint32_t lr_svc = 0;
 		retval = target_read_u32(rtos->target,
+#ifdef FREERTOS_PEBBLE
+				stack_ptr + 0x24,
+#else
 				stack_ptr + 0x20,
+#endif
 				&lr_svc);
 		if (retval != ERROR_OK) {
 			LOG_OUTPUT("Error reading stack frame from FreeRTOS thread");

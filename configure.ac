@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 AC_PREREQ([2.69])
-AC_INIT([openocd], [0.12.0+dev],
+AC_INIT([openocd], [0.12.0+pebble_dev],
   [OpenOCD Mailing List <openocd-devel@lists.sourceforge.net>])
 AC_CONFIG_SRCDIR([src/openocd.c])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -226,6 +226,10 @@ AS_IF([test "x$enable_gcov" = "xyes"], [
 ], [
   AC_DEFINE([USE_GCOV], [0], [0 to leave coverage collection disabled.])
 ])
+
+AC_ARG_ENABLE([freertos-pebble],
+  AS_HELP_STRING([--disable-freertos-pebble], [Do not build FreeRTOS plugin for Pebble flavor]),
+  [freertos_pebble=$enableval], [freertos_pebble=yes])
 
 # set default verbose options, overridden by following options
 debug_usb_io=no
@@ -858,6 +862,10 @@ AS_IF([test "x$gcc_warnings" = "xyes"], [
   AC_SUBST([GCC_WARNINGS], [$GCC_WARNINGS])
 ])
 
+AS_IF([test "x$freertos_pebble" = "xyes"], [
+  CFLAGS="${CFLAGS} -DFREERTOS_PEBBLE"
+])
+
 AC_SUBST(EXTRA_DIST_NEWS, ["$(echo $srcdir/NEWS-*)"])
 
 AC_CONFIG_FILES([
@@ -907,3 +915,9 @@ m4_foreach([adapter], [USB1_ADAPTERS,
 	])
 ])
 echo
+
+if test "${freertos_pebble}" = yes; then
+	echo
+	echo FreeRTOS plugin built for Pebble!
+	echo
+fi

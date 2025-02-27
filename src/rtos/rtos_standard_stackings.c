@@ -13,7 +13,30 @@
 #include "target/armv7m.h"
 #include "rtos_standard_stackings.h"
 
+/* Everything is offset 4 bytes from the standard arrangement because we also
+ * stack the control register, which contains the thread mode privilege.
+ */
+
 static const struct stack_register_offset rtos_standard_cortex_m3_stack_offsets[ARMV7M_NUM_CORE_REGS] = {
+#ifdef FREERTOS_PEBBLE
+	{ ARMV7M_R0,   0x24, 32 },		/* r0   */
+	{ ARMV7M_R1,   0x28, 32 },		/* r1   */
+	{ ARMV7M_R2,   0x2c, 32 },		/* r2   */
+	{ ARMV7M_R3,   0x30, 32 },		/* r3   */
+	{ ARMV7M_R4,   0x04, 32 },		/* r4   */
+	{ ARMV7M_R5,   0x08, 32 },		/* r5   */
+	{ ARMV7M_R6,   0x0c, 32 },		/* r6   */
+	{ ARMV7M_R7,   0x10, 32 },		/* r7   */
+	{ ARMV7M_R8,   0x14, 32 },		/* r8   */
+	{ ARMV7M_R9,   0x18, 32 },		/* r9   */
+	{ ARMV7M_R10,  0x1c, 32 },		/* r10  */
+	{ ARMV7M_R11,  0x20, 32 },		/* r11  */
+	{ ARMV7M_R12,  0x34, 32 },		/* r12  */
+	{ ARMV7M_R13,  -2,   32 },		/* sp   */
+	{ ARMV7M_R14,  0x38, 32 },		/* lr   */
+	{ ARMV7M_PC,   0x3c, 32 },		/* pc   */
+	{ ARMV7M_XPSR, 0x40, 32 },		/* xPSR */
+#else
 	{ ARMV7M_R0,   0x20, 32 },		/* r0   */
 	{ ARMV7M_R1,   0x24, 32 },		/* r1   */
 	{ ARMV7M_R2,   0x28, 32 },		/* r2   */
@@ -31,9 +54,29 @@ static const struct stack_register_offset rtos_standard_cortex_m3_stack_offsets[
 	{ ARMV7M_R14,  0x34, 32 },		/* lr   */
 	{ ARMV7M_PC,   0x38, 32 },		/* pc   */
 	{ ARMV7M_XPSR, 0x3c, 32 },		/* xPSR */
+#endif
 };
 
 static const struct stack_register_offset rtos_standard_cortex_m4f_stack_offsets[] = {
+#ifdef FREERTOS_PEBBLE
+	{ ARMV7M_R0,   0x28, 32 },		/* r0 */
+	{ ARMV7M_R1,   0x2c, 32 },		/* r1 */
+	{ ARMV7M_R2,   0x30, 32 },		/* r2 */
+	{ ARMV7M_R3,   0x34, 32 },		/* r3 */
+	{ ARMV7M_R4,   0x04, 32 },		/* r4 */
+	{ ARMV7M_R5,   0x08, 32 },		/* r5 */
+	{ ARMV7M_R6,   0x0c, 32 },		/* r6 */
+	{ ARMV7M_R7,   0x10, 32 },		/* r7 */
+	{ ARMV7M_R8,   0x14, 32 },		/* r8 */
+	{ ARMV7M_R9,   0x18, 32 },		/* r9 */
+	{ ARMV7M_R10,  0x1c, 32 },		/* r10 */
+	{ ARMV7M_R11,  0x20, 32 },		/* r11 */
+	{ ARMV7M_R12,  0x38, 32 },		/* r12 */
+	{ ARMV7M_R13,  -2,   32 },		/* sp */
+	{ ARMV7M_R14,  0x3c, 32 },		/* lr */
+	{ ARMV7M_PC,   0x40, 32 },		/* pc */
+	{ ARMV7M_XPSR, 0x44, 32 },		/* xPSR */
+#else
 	{ ARMV7M_R0,   0x24, 32 },		/* r0   */
 	{ ARMV7M_R1,   0x28, 32 },		/* r1   */
 	{ ARMV7M_R2,   0x2c, 32 },		/* r2   */
@@ -51,9 +94,29 @@ static const struct stack_register_offset rtos_standard_cortex_m4f_stack_offsets
 	{ ARMV7M_R14,  0x38, 32 },		/* lr   */
 	{ ARMV7M_PC,   0x3c, 32 },		/* pc   */
 	{ ARMV7M_XPSR, 0x40, 32 },		/* xPSR */
+#endif
 };
 
 static const struct stack_register_offset rtos_standard_cortex_m4f_fpu_stack_offsets[] = {
+#ifdef FREERTOS_PEBBLE
+	{ ARMV7M_R0,   0x68, 32 },		/* r0 */
+	{ ARMV7M_R1,   0x6c, 32 },		/* r1 */
+	{ ARMV7M_R2,   0x70, 32 },		/* r2 */
+	{ ARMV7M_R3,   0x74, 32 },		/* r3 */
+	{ ARMV7M_R4,   0x04, 32 },		/* r4 */
+	{ ARMV7M_R5,   0x08, 32 },		/* r5 */
+	{ ARMV7M_R6,   0x0c, 32 },		/* r6 */
+	{ ARMV7M_R7,   0x10, 32 },		/* r7 */
+	{ ARMV7M_R8,   0x14, 32 },		/* r8 */
+	{ ARMV7M_R9,   0x18, 32 },		/* r9 */
+	{ ARMV7M_R10,  0x1c, 32 },		/* r10 */
+	{ ARMV7M_R11,  0x20, 32 },		/* r11 */
+	{ ARMV7M_R12,  0x78, 32 },		/* r12 */
+	{ ARMV7M_R13,  -2,   32 },		/* sp */
+	{ ARMV7M_R14,  0x7c, 32 },		/* lr */
+	{ ARMV7M_PC,   0x80, 32 },		/* pc */
+	{ ARMV7M_XPSR, 0x84, 32 },		/* xPSR */
+#else
 	{ ARMV7M_R0,   0x64, 32 },		/* r0   */
 	{ ARMV7M_R1,   0x68, 32 },		/* r1   */
 	{ ARMV7M_R2,   0x6c, 32 },		/* r2   */
@@ -71,6 +134,7 @@ static const struct stack_register_offset rtos_standard_cortex_m4f_fpu_stack_off
 	{ ARMV7M_R14,  0x78, 32 },		/* lr   */
 	{ ARMV7M_PC,   0x7c, 32 },		/* pc   */
 	{ ARMV7M_XPSR, 0x80, 32 },		/* xPSR */
+#endif
 };
 
 
@@ -158,6 +222,10 @@ target_addr_t rtos_cortex_m_stack_align(struct target *target,
 	uint32_t xpsr;
 	target_addr_t new_stack_ptr;
 
+#ifdef FREERTOS_PEBBLE
+	xpsr_offset += 0x04;
+#endif
+
 	new_stack_ptr = stack_ptr - stacking->stack_growth_direction *
 		stacking->stack_registers_size;
 	xpsr = target_buffer_get_u32(target, &stack_data[xpsr_offset]);
@@ -196,9 +264,12 @@ static target_addr_t rtos_standard_cortex_m4f_fpu_stack_align(struct target *tar
 		stack_ptr, XPSR_OFFSET);
 }
 
-
 const struct rtos_register_stacking rtos_standard_cortex_m3_stacking = {
+#ifdef FREERTOS_PEBBLE
+	.stack_registers_size = 0x44,
+#else
 	.stack_registers_size = 0x40,
+#endif
 	.stack_growth_direction = -1,
 	.num_output_registers = ARMV7M_NUM_CORE_REGS,
 	.calculate_process_stack = rtos_standard_cortex_m3_stack_align,
@@ -206,7 +277,11 @@ const struct rtos_register_stacking rtos_standard_cortex_m3_stacking = {
 };
 
 const struct rtos_register_stacking rtos_standard_cortex_m4f_stacking = {
+#ifdef FREERTOS_PEBBLE
+	.stack_registers_size = 0x48,
+#else
 	.stack_registers_size = 0x44,
+#endif
 	.stack_growth_direction = -1,
 	.num_output_registers = ARMV7M_NUM_CORE_REGS,
 	.calculate_process_stack = rtos_standard_cortex_m4f_stack_align,
@@ -214,7 +289,11 @@ const struct rtos_register_stacking rtos_standard_cortex_m4f_stacking = {
 };
 
 const struct rtos_register_stacking rtos_standard_cortex_m4f_fpu_stacking = {
+#ifdef FREERTOS_PEBBLE
+	.stack_registers_size = 0xd0,
+#else
 	.stack_registers_size = 0xcc,
+#endif
 	.stack_growth_direction = -1,
 	.num_output_registers = ARMV7M_NUM_CORE_REGS,
 	.calculate_process_stack = rtos_standard_cortex_m4f_fpu_stack_align,
